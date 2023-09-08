@@ -96,7 +96,11 @@ function hitungStatistik(arr, jenisArray) {
 	const max = cariMax(arr);
 	const total = hitungTotal(arr);
 	const rata = hitungRata(arr);
+	const semuaArray = arr;
 
+	console.log("------------------------------------------------")
+	console.log(`Array acak ${jenisArray} index 1-50 : \n${semuaArray}`)
+	console.log("------------------------------------------------")
 	console.log(`Statistik pada array ${jenisArray}:`);
 	console.log(`Min: ${min}`);
 	console.log(`Max: ${max}`);
