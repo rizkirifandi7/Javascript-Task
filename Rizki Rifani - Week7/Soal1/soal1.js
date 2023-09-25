@@ -7,6 +7,7 @@ const rl = readline.createInterface({
 	output: process.stdout,
 });
 
+// Fungsi menu
 function showMenu() {
 	console.log("Pilih:");
 	console.log("1. Menghitung Luas dan Keliling Persegi");
