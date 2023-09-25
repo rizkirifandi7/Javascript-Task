@@ -56,14 +56,33 @@ function bandingkanNilai(nilaigenap, nilaiganjil) {
 	}
 }
 
+// Membuat array dengan 100 nilai acak antara 1 dan 50
+const arrayLengkap = [];
+for (let i = 0; i < 100; i++) {
+	arrayLengkap.push(Math.floor(Math.random() * 50) + 1);
+}
+
+// Membuat array untuk nilai genap dan ganjil tanpa menggunakan filter
+const arrayGenap = [];
+const arrayGanjil = [];
+for (let i = 0; i < arrayLengkap.length; i++) {
+	if (arrayLengkap[i] % 2 === 0) {
+		arrayGenap.push(arrayLengkap[i]);
+	} else {
+		arrayGanjil.push(arrayLengkap[i]);
+	}
+}
+
 // Fungsi menu pilihan
 function mainMenu() {
+	console.log("---------------------------------------------");
 	console.log("Menu:");
 	console.log("1. Hitung Statistik Array Genap");
 	console.log("2. Hitung Statistik Array Ganjil");
 	console.log("3. Tampilkan Seluruh Hasil Perbandingan");
 	console.log("4. Tampilkan Seluruh Hasil Statistik");
 	console.log("5. Keluar");
+	console.log("---------------------------------------------");
 	rl.question("Pilih menu (1/2/3/4/5): ", (pilihan) => {
 		switch (pilihan) {
 			case "1":
@@ -98,9 +117,8 @@ function hitungStatistik(arr, jenisArray) {
 	const rata = hitungRata(arr);
 	const semuaArray = arr;
 
-	console.log("------------------------------------------------")
-	console.log(`Array acak ${jenisArray} index 1-50 : \n${semuaArray}`)
-	console.log("------------------------------------------------")
+	console.log("---------------------------------------------");
+	console.log(`Array acak ${jenisArray} index 1-50 : \n${semuaArray}`);
 	console.log(`Statistik pada array ${jenisArray}:`);
 	console.log(`Min: ${min}`);
 	console.log(`Max: ${max}`);
@@ -112,6 +130,7 @@ function hitungStatistik(arr, jenisArray) {
 
 // Fungsi untuk menampilkan seluruh hasil perbandingan
 function tampilkanSeluruhPerbandingan() {
+	console.log("---------------------------------------------");
 	console.log("Seluruh Hasil Perbandingan:");
 	console.log("Perbandingan Min:");
 	console.log(bandingkanNilai(cariMin(arrayGenap), cariMin(arrayGanjil)));
@@ -129,6 +148,7 @@ function tampilkanSeluruhPerbandingan() {
 
 // Fungsi untuk menampilkan seluruh hasil statistik
 function tampilkanSeluruhHasil() {
+	console.log("---------------------------------------------");
 	console.log("Seluruh Hasil Statistik:");
 	console.log("Array dengan jumlah index 100:", arrayLengkap);
 	console.log("Array genap dengan jumlah index 50:", arrayGenap);
@@ -156,23 +176,6 @@ function tampilkanSeluruhHasil() {
 	);
 
 	mainMenu();
-}
-
-// Membuat array dengan 100 nilai acak antara 1 dan 50
-const arrayLengkap = [];
-for (let i = 0; i < 100; i++) {
-	arrayLengkap.push(Math.floor(Math.random() * 50) + 1);
-}
-
-// Membuat array untuk nilai genap dan ganjil tanpa menggunakan filter
-const arrayGenap = [];
-const arrayGanjil = [];
-for (let i = 0; i < arrayLengkap.length; i++) {
-	if (arrayLengkap[i] % 2 === 0) {
-		arrayGenap.push(arrayLengkap[i]);
-	} else {
-		arrayGanjil.push(arrayLengkap[i]);
-	}
 }
 
 // Memulai program dengan menampilkan menu utama

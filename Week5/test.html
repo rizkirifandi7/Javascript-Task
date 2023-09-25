@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Registrasi Pendaftar</title>
+	</head>
+	<style>
+		/* CSS untuk tab */
+		.tab {
+			display: none;
+		}
+		.active-tab {
+			display: block;
+		}
+
+		/* CSS untuk pop-up */
+		.popup {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 1;
+		}
+
+		.popup-content {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: white;
+			padding: 20px;
+			border-radius: 5px;
+		}
+
+		/* Tambahkan CSS untuk memposisikan pop-up form input update */
+		#updatePopup .popup-content {
+			width: 300px;
+			text-align: center;
+			background-color: #f9f9f9;
+			padding: 20px;
+			border-radius: 5px;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		/* Tambahkan CSS untuk pop-up kesalahan */
+		.popup-error {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			z-index: 2; /* Nilai z-index yang lebih tinggi untuk muncul di depan */
+		}
+
+		.popup-error-content {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: white;
+			padding: 20px;
+			border-radius: 5px;
+			z-index: 3; /* Nilai z-index yang lebih tinggi untuk muncul di depan */
+		}
+	</style>
+	<body>
+		<h1>Registrasi dan List Pendaftar</h1>
+		<ul>
+			<li><a href="#" onclick="tabManager.openTab(event, 'Registrasi')">Registrasi</a></li>
+			<li><a href="#" onclick="tabManager.openTab(event, 'ListPendaftar')">List Pendaftar</a></li>
+		</ul>
+
+		<!-- Tab Registrasi -->
+		<div id="Registrasi" class="tab active-tab">
+			<h2>Form Registrasi</h2>
+			<form id="registrationForm" onsubmit="return formManager.validateForm()">
+				<label for="nama">Nama (minimal 10 karakter):</label>
+				<input type="text" id="nama" name="nama" /><br /><br />
+
+				<label for="umur">Umur (minimal 25 tahun):</label>
+				<input type="number" id="umur" name="umur" /><br /><br />
+
+				<label for="uangSangu">Uang Sangu (minimal 100 ribu dan maksimal 1 juta):</label>
+				<input type="number" id="uangSangu" name="uangSangu" /><br /><br />
+
+				<input type="submit" value="Submit" />
+			</form>
+		</div>
+
+		<!-- Tab List Pendaftar -->
+		<div id="ListPendaftar" class="tab">
+			<h2>List Pendaftar</h2>
+			<table id="pendaftarTable">
+				<thead>
+					<tr>
+						<th>Nama</th>
+						<th>Umur</th>
+						<th>Uang Sangu</th>
+						<th>Aksi</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Data pendaftar akan ditampilkan di sini -->
+				</tbody>
+			</table>
+			<p id="resume"></p>
+		</div>
+
+		<!-- Tambahkan elemen div untuk pop-up pemberitahuan kesalahan -->
+		<div id="errorPopup" class="popup">
+			<span class="popup-content" id="errorMessage"></span>
+		</div>
+
+		<!-- Tambahkan elemen div untuk pop-up pemberitahuan berhasil -->
+		<div id="successPopup" class="popup">
+			<span class="popup-content" id="successMessage">Data berhasil disubmit.</span>
+		</div>
+
+		<!-- Tambahkan elemen div untuk pop-up form input update -->
+		<div id="updatePopup" class="popup">
+			<div class="popup-content">
+				<h3>Update Data Pendaftar</h3>
+				<form id="updateForm" onsubmit="return formManager.updateData()">
+					<label for="updatedNama">Nama (minimal 10 karakter):</label>
+					<input type="text" id="updatedNama" name="updatedNama" /><br /><br />
+
+					<label for="updatedUmur">Umur (minimal 25 tahun):</label>
+					<input type="number" id="updatedUmur" name="updatedUmur" /><br /><br />
+
+					<label for="updatedUangSangu">Uang Sangu (minimal 100 ribu dan maksimal 1 juta):</label>
+					<input type="number" id="updatedUangSangu" name="updatedUangSangu" /><br /><br />
+
+					<input type="submit" value="Update" />
+				</form>
+				<button onclick="formManager.closeUpdatePopup()">Batal</button>
+			</div>
+		</div>
+
+		<script>
+			class TabManager {
+				openTab(evt, tabName) {
+					const tabs = document.getElementsByClassName("tab");
+					for (let i = 0; i < tabs.length; i++) {
+						tabs[i].classList.remove("active-tab");
+					}
+					document.getElementById(tabName).classList.add("active-tab");
+				}
+			}
+
+			class FormManager {
+				constructor() {
+					this.pendaftar = [];
+					this.selectedRowIndex = -1;
+				}
+
+				validateForm() {
+					const nama = document.getElementById("nama").value;
+					const umur = parseInt(document.getElementById("umur").value);
+					const uangSangu = parseInt(document.getElementById("uangSangu").value);
+
+					if (nama.length < 10 || umur < 25 || uangSangu < 100000 || uangSangu > 1000000) {
+						this.showErrorPopup("Data yang dimasukkan tidak sesuai. Mohon periksa kembali.");
+						return false;
+					}
+
+					const dataPendaftar = {
+						nama: nama,
+						umur: umur,
+						uangSangu: uangSangu,
+					};
+
+					this.pendaftar.push(dataPendaftar);
+					this.updateListPendaftar();
+					this.calculateResume();
+					this.showSuccessPopup("Data berhasil disubmit.");
+
+					return false;
+				}
+
+				showErrorPopup(message) {
+					const errorPopup = document.getElementById("errorPopup");
+					const errorMessage = document.getElementById("errorMessage");
+
+					errorMessage.innerHTML = message;
+					errorPopup.style.display = "block";
+					errorPopup.classList.add("popup-error");
+
+					// Sembunyikan pop-up setelah beberapa detik (misalnya, 3 detik)
+					setTimeout(function () {
+						errorPopup.style.display = "none";
+					}, 1000);
+				}
+
+				showSuccessPopup(message) {
+					const successPopup = document.getElementById("successPopup");
+					const successMessage = document.getElementById("successMessage");
+
+					successPopup.style.display = "block";
+					successMessage.innerHTML = message;
+
+					// Mengosongkan nilai inputan formulir setelah data berhasil disubmit
+					document.getElementById("nama").value = "";
+					document.getElementById("umur").value = "";
+					document.getElementById("uangSangu").value = "";
+
+					// Sembunyikan pop-up setelah beberapa detik (misalnya, 3 detik)
+					setTimeout(function () {
+						successPopup.style.display = "none";
+					}, 1000);
+				}
+
+				updateListPendaftar() {
+					const table = document.getElementById("pendaftarTable");
+					const tbody = table.getElementsByTagName("tbody")[0];
+					tbody.innerHTML = "";
+
+					for (let i = 0; i < this.pendaftar.length; i++) {
+						const data = this.pendaftar[i];
+
+						const row = tbody.insertRow();
+						const cellNama = row.insertCell(0);
+						const cellUmur = row.insertCell(1);
+						const cellUangSangu = row.insertCell(2);
+						const cellAction = row.insertCell(3);
+
+						cellNama.innerHTML = data.nama;
+						cellUmur.innerHTML = data.umur;
+						cellUangSangu.innerHTML = data.uangSangu;
+
+						const btnHapus = document.createElement("button");
+						btnHapus.innerHTML = "Hapus";
+						btnHapus.addEventListener("click", () => {
+							this.pendaftar.splice(i, 1);
+							this.updateListPendaftar();
+							this.calculateResume();
+						});
+						cellAction.appendChild(btnHapus);
+
+						const btnUpdate = document.createElement("button");
+						btnUpdate.innerHTML = "Update";
+						btnUpdate.addEventListener("click", () => {
+							this.openUpdatePopup(i);
+						});
+						cellAction.appendChild(btnUpdate);
+					}
+				}
+
+				calculateResume() {
+					const totalUmur = this.pendaftar.reduce((total, data) => total + data.umur, 0);
+					const totalUangSangu = this.pendaftar.reduce((total, data) => total + data.uangSangu, 0);
+					const rataRataUmur = totalUmur / this.pendaftar.length;
+					const rataRataUangSangu = totalUangSangu / this.pendaftar.length;
+
+					const resume = `Rata-rata pendaftar memiliki uang saku sebesar ${rataRataUangSangu} dengan rata-rata umur ${rataRataUmur}`;
+					document.getElementById("resume").textContent = resume;
+				}
+
+				openUpdatePopup(index) {
+					this.selectedRowIndex = index;
+					const dataToUpdate = this.pendaftar[index];
+					const updatedNama = document.getElementById("updatedNama");
+					const updatedUmur = document.getElementById("updatedUmur");
+					const updatedUangSangu = document.getElementById("updatedUangSangu");
+
+					updatedNama.value = dataToUpdate.nama;
+					updatedUmur.value = dataToUpdate.umur;
+					updatedUangSangu.value = dataToUpdate.uangSangu;
+
+					const updatePopup = document.getElementById("updatePopup");
+					updatePopup.style.display = "block";
+				}
+
+				closeUpdatePopup() {
+					const updatePopup = document.getElementById("updatePopup");
+					updatePopup.style.display = "none";
+					this.selectedRowIndex = -1;
+				}
+
+				updateData() {
+					const updatedNama = document.getElementById("updatedNama").value;
+					const updatedUmur = parseInt(document.getElementById("updatedUmur").value);
+					const updatedUangSangu = parseInt(document.getElementById("updatedUangSangu").value);
+
+					if (
+						updatedNama.length < 10 ||
+						updatedUmur < 25 ||
+						updatedUangSangu < 100000 ||
+						updatedUangSangu > 1000000
+					) {
+						this.showErrorPopup("Data yang dimasukkan tidak sesuai. Mohon periksa kembali.");
+					} else {
+						this.pendaftar[this.selectedRowIndex].nama = updatedNama;
+						this.pendaftar[this.selectedRowIndex].umur = updatedUmur;
+						this.pendaftar[this.selectedRowIndex].uangSangu = updatedUangSangu;
+						this.updateListPendaftar();
+						this.calculateResume();
+						this.closeUpdatePopup();
+						this.showSuccessPopup("Data berhasil diupdate.");
+					}
+
+					return false;
+				}
+			}
+
+			const tabManager = new TabManager();
+			const formManager = new FormManager();
+		</script>
+	</body>
+</html>
