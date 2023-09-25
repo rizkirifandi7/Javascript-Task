@@ -203,3 +203,5 @@ class StatistikProgram {
 
 const statistikProgram = new StatistikProgram();
 statistikProgram.start();
+
+// 
